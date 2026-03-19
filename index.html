@@ -266,6 +266,14 @@ const sel = new Map();
 let superMode=false, order='orig', examQs=[], examAns={}, examChecked=false, examTitle='';
 
 /* BUILD SPLASH */
+
+function fmt(text) {
+  // Put each I. II. III. item on its own line
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/ (I{1,3}V?|IV|VI{0,3}|IX|X)\.\s+/g, '<br>$1. ');
+}
+
 function buildSplash() {
   const rows = document.getElementById('class-rows');
   CLASSES.forEach((cls, ci) => {
@@ -397,10 +405,10 @@ function renderQs(){
     card.innerHTML=`
       <div class="qcard-head">
         <div class="qnum">Pregunta ${qi+1} <span style="color:var(--dim);font-weight:400">— ${q._src}</span></div>
-        <div class="qtext">${q.q.replace(/\n/g,'<br>')}</div>
+        <div class="qtext">${fmt(q.q)}</div>
       </div>
       <div class="alts" id="alts${qi}">
-        ${q.alts.map((a,ai)=>`<button class="alt" id="a${qi}_${ai}" onclick="pick(${qi},${ai})"><span class="al">${L[ai]}</span><span>${a}</span></button>`).join('')}
+        ${q.alts.map((a,ai)=>`<button class="alt" id="a${qi}_${ai}" onclick="pick(${qi},${ai})"><span class="al">${L[ai]}</span><span>${fmt(a)}</span></button>`).join('')}
       </div>
       <div class="qcard-foot" id="foot${qi}" style="display:none"></div>`;
     w.appendChild(card);
@@ -483,7 +491,14 @@ function showResults(correct,total,tStats){
   show('results');window.scrollTo(0,0);
 }
 
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const cr = document.getElementById('copyright');
+  if(cr) cr.style.display = id==='exam' ? 'none' : 'flex';
+}
+
 function goSplash(){show('splash');window.scrollTo(0,0);}
 function reviewExam(){show('exam');window.scrollTo(0,0);}
 function confirmHome(){if(examChecked||Object.keys(examAns).length===0||confirm('¿Salir? Perderás el progreso.'))goSplash();}
@@ -491,5 +506,27 @@ function confirmHome(){if(examChecked||Object.keys(examAns).length===0||confirm(
 buildSplash();
 refreshSummary();
 </script>
+
+<div id="copyright" style="
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(13,17,23,.97);
+  border-top:1px solid #30363d;
+  padding:6px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  font-size:11px;color:#484f58;z-index:300;
+  pointer-events:none;
+">
+  <span>© 2026 <strong style="color:#8b949e">Felipe Gaete</strong> — Material de estudio personal. Basado en controles de capacitación AFP.</span>
+  <span style="color:#30363d">Quiz AFP v5 · 352 preguntas · 18 controles · 8 clases</span>
+</div>
+<style>
+  /* Push content above the copyright bar */
+  #splash { padding-bottom: 80px; }
+  #results { padding-bottom: 60px; }
+  /* hide copyright during exam so float counter is visible */
+  #exam.screen.on ~ #copyright { display:none; }
+</style>
+
 </body>
 </html>
