@@ -159,6 +159,70 @@ body{font-family:var(--fh);background:var(--bg);color:var(--txt);min-height:100v
 .rbtn-out{background:var(--sur);border:1px solid var(--bdr);color:var(--txt)}.rbtn-out:hover{border-color:var(--acc);color:var(--acc)}
 .rbtn-fill{background:var(--acc);border:none;color:#fff}.rbtn-fill:hover{filter:brightness(1.1)}
 
+
+/* ── DISCARD ── */
+.alt.discarded{opacity:.35;text-decoration:line-through;cursor:pointer!important}
+.alt.discarded .al{opacity:.4}
+.alt.discarded:hover:not(:disabled){background:var(--red-bg)!important;border-color:var(--red-bdr)!important;opacity:.5}
+.discard-hint{font-size:10px;color:var(--dim);margin-top:6px;padding:0 20px 10px;font-style:italic}
+
+/* ── TIMER ── */
+#timer-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--sur2);border-bottom:1px solid var(--bdr);
+  padding:7px 24px;font-size:12px;color:var(--mut);
+}
+#timer-display{
+  font-family:var(--fh);font-size:14px;font-weight:800;
+  color:var(--acc);min-width:54px;letter-spacing:.04em;
+}
+#timer-display.warn{color:var(--yel)}
+#timer-display.danger{color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#timer-bar-fill{flex:1;height:4px;background:var(--sur);border-radius:99px;overflow:hidden}
+#timer-bar-inner{height:100%;background:var(--acc);border-radius:99px;transition:width .5s linear,background .5s}
+
+/* ── SPLASH SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.setting-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 14px}
+.setting-label{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.setting-row{display:flex;align-items:center;gap:10px}
+
+/* Toggle switch */
+.tog-wrap{display:flex;align-items:center;gap:8px;cursor:pointer}
+.tog{width:36px;height:20px;border-radius:10px;background:var(--sur2);border:1px solid var(--bdr);position:relative;transition:background .15s;flex-shrink:0;cursor:pointer}
+.tog.on{background:var(--acc);border-color:var(--acc)}
+.tog::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tog.on::after{left:18px}
+.tog-label{font-size:13px;color:var(--txt);font-weight:500}
+
+/* Time input */
+.time-input-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.time-input-row input{width:52px;padding:5px 8px;background:var(--sur2);border:1px solid var(--bdr);border-radius:5px;color:var(--txt);font-family:var(--fh);font-size:13px;text-align:center}
+.time-input-row input:focus{outline:none;border-color:var(--acc)}
+.time-input-row span{font-size:12px;color:var(--mut)}
+.time-input-row input:disabled{opacity:.3}
+
+/* Practice badge in topbar */
+#practice-badge{
+  background:rgba(63,185,80,.15);border:1px solid var(--grn-bdr);
+  color:var(--grn);font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap;
+  flex-shrink:0;
+}
+
+/* Practice per-question verify */
+.practice-verify{
+  display:flex;align-items:center;gap:6px;
+  padding:0 20px 14px;margin-top:6px;
+}
+.pv-btn{
+  padding:5px 14px;border-radius:6px;border:1px solid var(--bdr);
+  background:var(--sur2);color:var(--mut);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:var(--fh);transition:all .12s;
+}
+.pv-btn:hover{border-color:var(--acc);color:var(--acc)}
+.pv-btn.revealed{border-color:var(--grn);color:var(--grn);background:var(--grn-bg)}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:99px}
 @media(max-width:640px){.sp-title{font-size:28px}.class-rows{grid-template-columns:1fr}.order-row{grid-template-columns:1fr 1fr}#qwrap{padding:14px 14px 100px}#tb-title{max-width:100px}}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -207,6 +271,33 @@ body{font-family:var(--fh);background:var(--bg);color:var(--txt);min-height:100v
 
   <div id="sel-summary"></div>
 
+
+  <div class="sec-lbl" style="margin:16px 0 8px">Configuración</div>
+  <div class="settings-grid">
+    <div class="setting-card">
+      <div class="setting-label">🎯 Modo práctica</div>
+      <div class="tog-wrap" onclick="togglePractice()">
+        <div class="tog" id="tog-practice"></div>
+        <div class="tog-label" id="tog-practice-lbl">Desactivado</div>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-top:6px">Verifica cada respuesta individualmente sin terminar el quiz.</div>
+    </div>
+    <div class="setting-card">
+      <div class="setting-label">⏱ Cronómetro</div>
+      <div class="tog-wrap" onclick="toggleTimer()">
+        <div class="tog" id="tog-timer"></div>
+        <div class="tog-label" id="tog-timer-lbl">Desactivado</div>
+      </div>
+      <div class="time-input-row">
+        <input type="number" id="timer-min" value="30" min="1" max="180" disabled>
+        <span>min máx.</span>
+        <div class="tog-wrap" onclick="toggleTimerLimit()" style="margin-left:4px">
+          <div class="tog" id="tog-limit" style="width:28px;height:16px"></div>
+          <span style="font-size:11px;color:var(--mut)">límite</span>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="sec-lbl" style="margin-bottom:8px">Orden</div>
   <div class="order-row">
     <div class="ord sel" onclick="pickOrd(this,'orig')"><div class="ord-icon">📋</div><div class="ord-title">Original</div><div class="ord-desc">Como en el PDF</div></div>
@@ -226,11 +317,18 @@ body{font-family:var(--fh);background:var(--bg);color:var(--txt);min-height:100v
   <div id="topbar">
     <button class="tb-btn tb-home" onclick="confirmHome()">⌂</button>
     <div id="tb-title">AFP QUIZ</div>
+    <div id="practice-badge" style="display:none">Práctica</div>
     <div id="tb-prog-wrap">
       <div id="tb-prog-bar"><div id="tb-prog-fill" style="width:0%"></div></div>
       <div id="tb-prog-lbl">0 / 0</div>
     </div>
     <button class="tb-btn tb-check" id="check-btn" disabled onclick="checkAll()">Verificar todo</button>
+  </div>
+
+  <div id="timer-bar" style="display:none">
+    <span id="timer-display">00:00</span>
+    <div id="timer-bar-fill"><div id="timer-bar-inner" style="width:100%"></div></div>
+    <span id="timer-limit-lbl" style="font-size:11px;color:var(--dim)"></span>
   </div>
   <div id="qwrap"></div>
   <div id="fctr"><span id="fctr-num">0</span><span>respondidas</span></div>
@@ -272,6 +370,121 @@ function fmt(text) {
   return text
     .replace(/\n/g, '<br>')
     .replace(/ (I{1,3}V?|IV|VI{0,3}|IX|X)\.\s+/g, '<br>$1. ');
+}
+
+
+/* ── SETTINGS STATE ── */
+let practiceMode = false;
+let timerOn = false;
+let timerLimit = false;
+let timerSeconds = 0;
+let timerMax = 0;
+let timerInterval = null;
+const discarded = new Set(); // "qi_ai" keys
+
+function togglePractice() {
+  practiceMode = !practiceMode;
+  document.getElementById('tog-practice').classList.toggle('on', practiceMode);
+  document.getElementById('tog-practice-lbl').textContent = practiceMode ? 'Activado' : 'Desactivado';
+}
+
+function toggleTimer() {
+  timerOn = !timerOn;
+  document.getElementById('tog-timer').classList.toggle('on', timerOn);
+  document.getElementById('tog-timer-lbl').textContent = timerOn ? 'Activado' : 'Desactivado';
+  document.getElementById('timer-min').disabled = !timerOn;
+}
+
+function toggleTimerLimit() {
+  if (!timerOn) return;
+  timerLimit = !timerLimit;
+  document.getElementById('tog-limit').classList.toggle('on', timerLimit);
+}
+
+/* ── TIMER ── */
+function startTimer() {
+  timerSeconds = 0;
+  timerMax = parseInt(document.getElementById('timer-min').value || 30) * 60;
+  const bar = document.getElementById('timer-bar');
+  const display = document.getElementById('timer-display');
+  const inner = document.getElementById('timer-bar-inner');
+  const limitLbl = document.getElementById('timer-limit-lbl');
+  bar.style.display = 'flex';
+  if (timerLimit) limitLbl.textContent = `Límite: ${Math.round(timerMax/60)} min`;
+  
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+    const s = String(timerSeconds%60).padStart(2,'0');
+    display.textContent = `${m}:${s}`;
+    
+    if (timerLimit) {
+      const pct = Math.max(0, (1 - timerSeconds/timerMax)*100);
+      inner.style.width = pct + '%';
+      inner.style.background = pct > 40 ? 'var(--acc)' : pct > 15 ? 'var(--yel)' : 'var(--red)';
+      display.className = pct > 40 ? '' : pct > 15 ? 'warn' : 'danger';
+      if (timerSeconds >= timerMax) {
+        clearInterval(timerInterval);
+        display.textContent = '⏰ ¡Tiempo!';
+        // Auto-verify with what's answered
+        setTimeout(() => checkAll(true), 800);
+      }
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  document.getElementById('timer-bar').style.display = 'none';
+}
+
+/* ── DISCARD ── */
+function toggleDiscard(qi, ai, e) {
+  e.stopPropagation();
+  const key = qi+'_'+ai;
+  const btn = document.getElementById('a'+qi+'_'+ai);
+  if (examChecked || btn.classList.contains('picked')) return;
+  if (discarded.has(key)) {
+    discarded.delete(key);
+    btn.classList.remove('discarded');
+  } else {
+    discarded.add(key);
+    btn.classList.add('discarded');
+  }
+}
+
+/* ── PRACTICE VERIFY per question ── */
+function practiceVerifyQ(qi) {
+  const q = examQs[qi];
+  const L = ['A','B','C','D'];
+  const sel = examAns[qi];
+  const pvBtn = document.getElementById('pv'+qi);
+  const foot = document.getElementById('foot'+qi);
+  const card = document.getElementById('qc'+qi);
+
+  if (sel === undefined) { pvBtn.textContent = '⚠ Selecciona una opción primero'; setTimeout(()=>{pvBtn.textContent='Verificar';},1500); return; }
+
+  q.alts.forEach((_,ai)=>{ document.getElementById('a'+qi+'_'+ai).disabled=true; });
+  pvBtn.classList.add('revealed');
+  pvBtn.textContent = sel === q.ans ? '✓ Correcto' : '✗ Incorrecto';
+
+  if (sel === q.ans) {
+    document.getElementById('a'+qi+'_'+sel).classList.add('rev-ok');
+    card.classList.add('ok');
+    foot.innerHTML = '<div class="fb-row"><span class="fb-badge fb-ok">✓ Correcto</span></div>';
+  } else {
+    document.getElementById('a'+qi+'_'+sel).classList.add('rev-bad');
+    document.getElementById('a'+qi+'_'+q.ans).classList.add('rev-ok');
+    card.classList.add('fail');
+    let refHtml = '';
+    if (q.refs && q.refs.length) {
+      const items = q.refs.map(r=>`<div class="just-slide"><div class="jshead"><span class="pg-badge">Diap. ${r.page}</span></div><div class="slide-text">${hl(r.text,q.q+' '+q.alts[q.ans])}</div></div>`).join('');
+      refHtml = `<div class="just-wrap"><button class="just-toggle" onclick="togJ(this)"><span>📖</span><span>Ver material (${q.refs.length} diap.)</span><span class="jt-chev">▼</span></button><div class="just-body">${items}</div></div>`;
+    }
+    foot.innerHTML = `<div class="fb-row"><span class="fb-badge fb-bad">✗ Incorrecto</span><span class="fb-ans">Respuesta: <strong>${L[q.ans]}) ${q.alts[q.ans]}</strong></span></div>${refHtml}`;
+  }
+  foot.style.display = '';
 }
 
 function buildSplash() {
@@ -385,8 +598,12 @@ function buildQs(){
 /* START */
 function startExam(){
   examQs=buildQs();examAns={};examChecked=false;
+  discarded.clear();
   document.getElementById('tb-title').textContent=examTitle;
   document.getElementById('fctr').classList.remove('hide');
+  const pb = document.getElementById('practice-badge');
+  pb.style.display = practiceMode ? 'block' : 'none';
+  if (timerOn) startTimer(); else stopTimer();
   show('exam');renderQs();updateProg();window.scrollTo(0,0);
 }
 
@@ -408,8 +625,16 @@ function renderQs(){
         <div class="qtext">${fmt(q.q)}</div>
       </div>
       <div class="alts" id="alts${qi}">
-        ${q.alts.map((a,ai)=>`<button class="alt" id="a${qi}_${ai}" onclick="pick(${qi},${ai})"><span class="al">${L[ai]}</span><span>${fmt(a)}</span></button>`).join('')}
+        ${q.alts.map((a,ai)=>`
+          <button class="alt" id="a${qi}_${ai}"
+            onclick="pick(${qi},${ai})"
+            oncontextmenu="toggleDiscard(${qi},${ai},event);return false;"
+            title="Click derecho para descartar/restaurar">
+            <span class="al">${L[ai]}</span><span>${fmt(a)}</span>
+          </button>`).join('')}
       </div>
+      <div class="discard-hint">💡 Click derecho sobre una opción para descartarla / restaurarla</div>
+      ${practiceMode ? `<div class="practice-verify"><button class="pv-btn" id="pv${qi}" onclick="practiceVerifyQ(${qi})">Verificar</button></div>` : ''}
       <div class="qcard-foot" id="foot${qi}" style="display:none"></div>`;
     w.appendChild(card);
   });
@@ -428,13 +653,13 @@ function updateProg(){
   document.getElementById('tb-prog-fill').style.width=pct+'%';
   document.getElementById('tb-prog-lbl').textContent=`${done} / ${total}`;
   document.getElementById('fctr-num').textContent=done;
-  document.getElementById('check-btn').disabled=done<total;
+  document.getElementById('check-btn').disabled = !practiceMode && done<total;
 }
 
 /* CHECK */
-function checkAll(){
-  if(!confirm(`¿Verificar ahora? Respondiste ${Object.keys(examAns).length} de ${examQs.length}.`))return;
-  examChecked=true;document.getElementById('fctr').classList.add('hide');
+function checkAll(force=false){
+  if(!force && !confirm(`¿Verificar ahora? Respondiste ${Object.keys(examAns).length} de ${examQs.length}.`))return;
+  examChecked=true;document.getElementById('fctr').classList.add('hide');stopTimer();
   const L=['A','B','C','D'];let correct=0;const tStats={};
   examQs.forEach((q,qi)=>{
     const s=examAns[qi],card=document.getElementById('qc'+qi),foot=document.getElementById('foot'+qi);
@@ -499,7 +724,7 @@ function show(id){
   if(cr) cr.style.display = id==='exam' ? 'none' : 'flex';
 }
 
-function goSplash(){show('splash');window.scrollTo(0,0);}
+function goSplash(){stopTimer();discarded.clear();show('splash');window.scrollTo(0,0);}
 function reviewExam(){show('exam');window.scrollTo(0,0);}
 function confirmHome(){if(examChecked||Object.keys(examAns).length===0||confirm('¿Salir? Perderás el progreso.'))goSplash();}
 
